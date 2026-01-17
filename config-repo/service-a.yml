@@ -1,0 +1,3 @@
+app:
+  name: "service-a"
+  message: "Config for service-a on default profile"

@@ -1,0 +1,3 @@
+app:
+  global:
+    message: "Hello from central config (application.yml)"
