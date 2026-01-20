@@ -1,0 +1,17 @@
+services:
+  config-server:
+    build:
+      context: ..
+      dockerfile: Dockerfile
+    image: banking/config-server:latest
+    ports:
+      - "8888:8888"
+    environment:
+      GITHUB_USERNAME: *
+      GITHUB_TOKEN: *
+    restart: unless-stopped
+    networks: [ banknet ]
+
+networks:
+  banknet:
+    external: true

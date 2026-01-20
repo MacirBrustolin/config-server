@@ -1,0 +1,47 @@
+services:
+  keycloak-db:
+    image: postgres:16
+    container_name: keycloak-db
+    environment:
+      POSTGRES_DB: *
+      POSTGRES_USER: *
+      POSTGRES_PASSWORD: *
+    volumes:
+      - keycloak_db_data:/var/lib/postgresql/data
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U keycloak -d keycloak" ]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    networks: [ banknet ]
+
+  keycloak:
+    image: quay.io/keycloak/keycloak:26.5.1
+    container_name: keycloak
+    depends_on:
+      keycloak-db:
+        condition: service_healthy
+    command:
+      - start-dev
+      - --import-realm
+      - --hostname=http://auth.local
+      - --proxy-headers=xforwarded
+      - --http-enabled=true
+    environment:
+      KC_BOOTSTRAP_ADMIN_USERNAME: *
+      KC_BOOTSTRAP_ADMIN_PASSWORD: *
+      KC_DB: *
+      KC_DB_URL: jdbc:postgresql://keycloak-db:5432/keycloak
+      KC_DB_USERNAME: *
+      KC_DB_PASSWORD: *
+      KC_HEALTH_ENABLED: "true"
+    volumes:
+      - ./keycloak-import:/opt/keycloak/data/import:ro
+    networks: [ banknet ]
+
+networks:
+  banknet:
+    external: true
+
+volumes:
+  keycloak_db_data:
