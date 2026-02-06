@@ -6,6 +6,8 @@ spring:
     name: config-server
 
   cloud:
+    bus:
+      destination: refresh-bus-exchange
     config:
       server:
         git:
@@ -16,3 +18,18 @@ spring:
           force-pull: true
           username: ${GITHUB_USERNAME}
           password: ${GITHUB_TOKEN}
+        monitor:
+          github:
+            enabled: true
+
+  rabbitmq:
+    host: ${RABBIT_HOST:localhost}
+    port: ${RABBIT_PORT:5672}
+    username: ${RABBIT_USER:guest}
+    password: ${RABBIT_PASS:guest}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,env,refresh,bus-refresh,monitor
